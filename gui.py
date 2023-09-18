@@ -1,7 +1,10 @@
 from cgitb import text
+from operator import le
+from struct import pack_into
 from tkinter import *
 from tkinter.font import Font
 from tkinter import filedialog as fd
+from turtle import left
 from PIL import Image, ImageTk
 from functions import *
 
@@ -18,7 +21,6 @@ def openfile():
         canvas.img = img
 
 def brightFunc():
-    global brightness_input
     if frame_for_input.winfo_ismapped():
         frame_for_input.pack_forget()
     else:
@@ -28,8 +30,19 @@ def brightFunc():
 def submit_brightness():
     value = brightness_input.get()
     print(value)
+    frame_for_input.pack_forget()
 
 
+def contrastFunc():
+    if frame_for_input2.winfo_ismapped():
+        frame_for_input2.pack_forget()
+    else:
+        frame_for_input2.pack()
+
+def submit_contrast():
+    value = contrast_input.get()
+    print(value)
+    frame_for_input2.pack_forget()
 
 window = Tk()
 window.title("Photoshop")
@@ -97,42 +110,30 @@ flipVerticalBtn.pack(side=LEFT)
 
 #Brightness
 
-frame_for_input = Frame(
-    window,
-    padx=10,
-    pady=10,
-    bg="#00004d"
-)
+frame_for_input = Frame(window, padx=10, pady=10, bg="#00004d")
+
 brigth_label = Label(frame_for_input, text="Input value for brightness: ").pack(side=LEFT)
-bright_submit = Button(
-            frame_for_input,
-            text="submit",
-            command=submit_brightness
-        ).pack(side=LEFT)
+
+bright_submit = Button(frame_for_input, text="submit", command=submit_brightness).pack(side=LEFT)
+
 brightness_input = Entry(frame_for_input)
 brightness_input.pack()
-# brightness_input = Entry(frame_for_input).pack(side=LEFT)
 
 
 ic5 = PhotoImage(file="icons/brightness.png")
-brightness = Button(
-    frame1,
-    image=ic5,
-    borderwidth=0,
-    command=brightFunc
-)
+brightness = Button(frame1, image=ic5, borderwidth=0, command=brightFunc)
 brightness.pack(side=LEFT)
 
 
-
-
 #Contrast
+frame_for_input2 = Frame(window, padx=10, pady=10, bg="#00004d")
+contrast_label = Label(frame_for_input2, text="Input value for contrast: ").pack(side=LEFT)
+contrast_submit = Button(frame_for_input2, text="submit", command=submit_contrast).pack(side=LEFT)
+contrast_input = Entry(frame_for_input2)
+contrast_input.pack()
+
 ic6 = PhotoImage(file="icons/contrast.png")
-contrast = Button(
-    frame1,
-    image=ic6,
-    borderwidth=0
-)
+contrast = Button(frame1, image=ic6, borderwidth=0, command=contrastFunc)
 contrast.pack(side=LEFT)
 
 
