@@ -32,6 +32,16 @@ def flip_vertically(image_location):
 
 ##### rotate #####
 
+def rotate_jpg(image_location, angle):
+    expand = True
+    im = Image.open(image_location)
+    out = im.rotate(angle, expand=True)
+    out.save('rotate-output.png')
+    return out 
+
+
+
+
 
 
     
