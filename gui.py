@@ -1,10 +1,6 @@
-from cgitb import text
-from operator import le
-from struct import pack_into
 from tkinter import *
 from tkinter.font import Font
 from tkinter import filedialog as fd
-from turtle import left
 from PIL import Image, ImageTk
 from functions import *
 
