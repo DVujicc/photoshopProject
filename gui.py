@@ -8,10 +8,25 @@ from PIL import Image, ImageTk, ImageGrab
 from functions import *
 
 file_path = ""
-WIDTH = 600
+WIDTH = 700
 HEIGHT = 400
 image = None
 current_image = None
+
+
+def calculateCenter(new_width):
+    canvas_center_x = WIDTH / 2
+    canvas_center_y = HEIGHT / 2
+    image_x = canvas_center_x - new_width / 2
+    image_y = canvas_center_y - HEIGHT / 2
+    return image_x, image_y
+
+def calculateCenterH(new_height):
+    canvas_center_x = WIDTH / 2
+    canvas_center_y = HEIGHT / 2
+    image_x = canvas_center_x - WIDTH / 2
+    image_y = canvas_center_y - new_height / 2
+    return image_x, image_y
 
 #pravi inicijalnu belu sliku za canvas
 def get_image():
@@ -31,7 +46,8 @@ def openfile():
         image = image.resize((new_width, HEIGHT), Image.LANCZOS)
         current_image = ImageTk.PhotoImage(image)
 
-        canvas.create_image(0, 0, anchor=NW, image=current_image)
+        image_x, image_y = calculateCenter(new_width)
+        canvas.create_image(image_x, image_y, anchor=NW, image=current_image)
 
 #funkcija za cuvanje slike OVO POPRAVI
 def saveimage():
@@ -62,10 +78,16 @@ def submit_brightness():
     image = blend(image, value)
     ar = float(image.width / image.height)
     new_width = int(ar * HEIGHT)
-    current_image = image.resize((new_width, HEIGHT), Image.LANCZOS)
+    if new_width > WIDTH:
+        new_height = int(WIDTH / ar)
+        current_image = image.resize((WIDTH, new_height))
+        image_x, image_y = calculateCenterH(new_height)
+    else:
+        current_image = image.resize((new_width, HEIGHT))
+        image_x, image_y = calculateCenter(new_width)
     current_image = ImageTk.PhotoImage(current_image)
     canvas.delete("all")
-    canvas.create_image(0, 0, anchor=NW, image=current_image)
+    canvas.create_image(image_x, image_y, anchor=NW, image=current_image)
     
     frame_for_input.pack_forget()
 
@@ -84,10 +106,16 @@ def submit_contrast():
     image = contrast(image, val/10)
     ar = float(image.width / image.height)
     new_width = int(ar * HEIGHT)
-    current_image = image.resize((new_width, HEIGHT), Image.LANCZOS)
+    if new_width > WIDTH:
+        new_height = int(WIDTH / ar)
+        current_image = image.resize((WIDTH, new_height))
+        image_x, image_y = calculateCenterH(new_height)
+    else:
+        current_image = image.resize((new_width, HEIGHT))
+        image_x, image_y = calculateCenter(new_width)
     current_image = ImageTk.PhotoImage(current_image)
     canvas.delete("all")
-    canvas.create_image(0, 0, anchor=NW, image=current_image)
+    canvas.create_image(image_x, image_y, anchor=NW, image=current_image)
 
     frame_for_input2.pack_forget()
 
@@ -98,10 +126,16 @@ def pozovivert():
     image = flip_vertically(image)
     ar = float(image.width / image.height)
     new_width = int(ar * HEIGHT)
-    current_image = image.resize((new_width, HEIGHT), Image.LANCZOS)
+    if new_width > WIDTH:
+        new_height = int(WIDTH / ar)
+        current_image = image.resize((WIDTH, new_height))
+        image_x, image_y = calculateCenterH(new_height)
+    else:
+        current_image = image.resize((new_width, HEIGHT))
+        image_x, image_y = calculateCenter(new_width)
     current_image = ImageTk.PhotoImage(current_image)
     canvas.delete("all")
-    canvas.create_image(0, 0, anchor=NW, image=current_image)
+    canvas.create_image(image_x, image_y, anchor=NW, image=current_image)
 
 
 #funkcija koja poziva funkciju za horizontal flip i ucitava novu sliku
@@ -110,20 +144,32 @@ def pozovihor():
     image = flip_horizontally(image)
     ar = float(image.width / image.height)
     new_width = int(ar * HEIGHT)
-    current_image = image.resize((new_width, HEIGHT), Image.LANCZOS)
+    if new_width > WIDTH:
+        new_height = int(WIDTH / ar)
+        current_image = image.resize((WIDTH, new_height))
+        image_x, image_y = calculateCenterH(new_height)
+    else:
+        current_image = image.resize((new_width, HEIGHT))
+        image_x, image_y = calculateCenter(new_width)
     current_image = ImageTk.PhotoImage(current_image)
     canvas.delete("all")
-    canvas.create_image(0, 0, anchor=NW, image=current_image)
+    canvas.create_image(image_x, image_y, anchor=NW, image=current_image)
 
 def pozovirot(): 
     global file_path, image, current_image
     image = rotation(image, 90)
     ar = float(image.width / image.height)
     new_width = int(ar * HEIGHT)
-    current_image = image.resize((new_width, HEIGHT), Image.LANCZOS)
+    if new_width > WIDTH:
+        new_height = int(WIDTH / ar)
+        current_image = image.resize((WIDTH, new_height))
+        image_x, image_y = calculateCenterH(new_height)
+    else:
+        image_x, image_y = calculateCenter(new_width)
+        current_image = image.resize((new_width, HEIGHT), Image.LANCZOS)
     current_image = ImageTk.PhotoImage(current_image)
     canvas.delete("all")
-    canvas.create_image(0, 0, anchor=NW, image=current_image)
+    canvas.create_image(image_x, image_y, anchor=NW, image=current_image)
 
 def cropfunc():
     if frame_for_input3.winfo_ismapped():
@@ -140,10 +186,17 @@ def submit_crop():
     image = crop(image, val_left, val_top, val_right, val_bottom)
     ar = float(image.width / image.height)
     new_width = int(ar * HEIGHT)
-    current_image = image.resize((new_width, HEIGHT), Image.LANCZOS)
+    if new_width >= WIDTH:
+        new_height = int(WIDTH / ar)
+        current_image = image.resize((WIDTH, new_height))
+        image_x, image_y = calculateCenterH(new_height)
+    else:
+        image_x, image_y = calculateCenter(new_width)
+        current_image = image.resize((new_width, HEIGHT), Image.LANCZOS)
     current_image = ImageTk.PhotoImage(current_image)
+    
     canvas.delete("all")
-    canvas.create_image(0, 0, anchor=NW, image=current_image)
+    canvas.create_image(image_x, image_y, anchor=NW, image=current_image)
 
     frame_for_input3.pack_forget()
 
@@ -289,13 +342,11 @@ photoFrame = Frame(
     height=400,
     bg="#00004d"
 )
-photoFrame.pack(fill=BOTH, expand=TRUE, padx=30, pady=30) 
+photoFrame.pack(fill=BOTH, expand=TRUE, padx=30, pady=40) 
 
-canvas = Canvas(photoFrame, width=600, height=400, bg="#00004d", borderwidth=0, highlightbackground="#00004d") 
+canvas = Canvas(photoFrame, width=WIDTH, height=HEIGHT, bg="#00004d", borderwidth=0, highlightbackground="#00004d") 
 canvas.pack(side=TOP)
 
 canvas.create_image(0, 0, anchor=NW, image=current_image)
-
-
 
 window.mainloop()
