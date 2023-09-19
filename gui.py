@@ -35,11 +35,16 @@ def openfile():
 
 #funkcija za cuvanje slike OVO POPRAVI
 def saveimage():
-    global file_path
+    global file_path, canvas, image
     if file_path:
-        image = ImageGrab.grab(bbox=(canvas.winfo_rootx(), canvas.winfo_rooty(), canvas.winfo_rootx() + canvas.winfo_width(), canvas.winfo_rooty() + canvas.winfo_height()))
+        image = image.convert("RGB")
         file_path = fd.asksaveasfilename(defaultextension=".jpg")
-        image.save(file_path)
+        if file_path:
+            valid_extensions = (".jpg", ".jpeg", ".png", ".bmp", ".gif")
+            if not file_path.lower().endswith(valid_extensions):
+                file_path += ".jpg"
+
+        image.save(file_path, format="JPEG")
 
 #funkcija koja otvara ili zatvara polje za unos
 def brightFunc():
@@ -281,11 +286,12 @@ frame1.pack(side=TOP)
 photoFrame = Frame(
     window,
     width=600,
-    height=400
+    height=400,
+    bg="#00004d"
 )
 photoFrame.pack(fill=BOTH, expand=TRUE, padx=30, pady=30) 
 
-canvas = Canvas(photoFrame, width=600, height=400) 
+canvas = Canvas(photoFrame, width=600, height=400, bg="#00004d", borderwidth=0, highlightbackground="#00004d") 
 canvas.pack(side=TOP)
 
 canvas.create_image(0, 0, anchor=NW, image=current_image)
