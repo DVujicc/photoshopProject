@@ -9,59 +9,58 @@ from PIL import Image, ImageEnhance
 
 ###### crop ######
 
-def crop(image_location, height, width):
-    image = Image.open(image_location)
-    box = (height, height, width, width)
+def crop(image, left, top, right, bottom):
+    box = (left, top, right, bottom)
     cropped_image = image.crop(box)
-    cropped_image.save("cropped_img.jpg")
     return cropped_image
 
 ##### flip #####
     
-def flip_horizontally(image_location):
-    im = Image.open(image_location)
-    out = im.transpose(PIL.Image.FLIP_TOP_BOTTOM)
-    out.save(image_location)
+def flip_horizontally(image):
+    out = image.transpose(PIL.Image.FLIP_TOP_BOTTOM)
     return out 
     
-def flip_vertically(file_path):
-    im = Image.open(file_path)
-    out = im.transpose(PIL.Image.FLIP_LEFT_RIGHT)
-    out.save(file_path)
+def flip_vertically(image):
+    out = image.transpose(PIL.Image.FLIP_LEFT_RIGHT)
     return out 
 
 ##### rotate #####
 
-def rotation(image_location, angle):
+def rotation(image, angle):
     expand = True
-    im = Image.open(image_location)
-    out = im.rotate(angle, expand=True)
-    out.save(image_location)
+    #im = Image.open(image_location)
+    out = image.rotate(angle, expand=True)
     return out 
 
 ##### brightness #####
 
-def blend(image_location, value): 
-    #### podeli input sa 100
-    width, height = image_location.size
-    brightness = Image.new("RGB", (width, height), (255, 255, 255))          
-    it1 = np.nditer(image_location)
-    it2 = np.nditer(brightness)            
-    for (x) in it1:
-        for (y) in it2:
-            newImage = (x + y) * value
-    return newImage
+# def blend(image_location, value): 
+#     #### podeli input sa 100
+#     image = Image.open(image_location)
+#     width, height = image.size
+#     brightness = Image.new("RGB", (width, height), (255, 255, 255))          
+#     it1 = np.nditer(image_location)
+#     it2 = np.nditer(brightness)            
+#     for (x) in it1:
+#         for (y) in it2:
+#             newImage = (x + y) * value
+#     return newImage
+def blend(image, value):
+    enhancer = ImageEnhance.Brightness(image)
+
+    # Adjust the brightness using the provided value
+    adjusted_image = enhancer.enhance(value)
+
+    return adjusted_image
 
 ##### contrast #####
 
-def contrast(file_path, value): #### podeli input sa 10
-    im = Image.open(file_path)
-    image_array = np.array(im)
+def contrast(image, value): #### podeli input sa 10
+    image_array = np.array(image)
     contrast_factor = value
     contrast_img = image_array * contrast_factor
     contrast_img = np.clip (contrast_img, 0, 255)
     out = Image.fromarray(contrast_img.astype(np.uint8))
-    out.save(file_path)
     return out
 
 
@@ -69,7 +68,6 @@ def contrast(file_path, value): #### podeli input sa 10
 
 
     
-
 
 
 
