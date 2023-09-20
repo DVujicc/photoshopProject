@@ -12,7 +12,23 @@ WIDTH = 700
 HEIGHT = 400
 image = None
 current_image = None
+COLOR = "#000033"
 
+def warning_func():
+    frame_for_warnings.pack()
+
+def warning_forget():
+    frame_for_warnings.pack_forget()
+
+def check(val):
+    if val:
+        try:
+            int(val)
+            warning_forget()
+        except ValueError:
+            warning_func()
+    else:
+        warning_forget()
 
 def calculateCenter(new_width):
     canvas_center_x = WIDTH / 2
@@ -73,6 +89,7 @@ def brightFunc():
 def submit_brightness():
     global file_path, current_image, image
     value = brightness_input.get()
+    check(value)
     value = int(value)
     value /= 100
     image = blend(image, value)
@@ -102,6 +119,7 @@ def contrastFunc():
 def submit_contrast():
     global file_path, current_image, image
     val = contrast_input.get()
+    check(val)
     val = int(val)
     image = contrast(image, val/10)
     ar = float(image.width / image.height)
@@ -179,10 +197,18 @@ def cropfunc():
     
 def submit_crop():
     global file_path, current_image, image
-    val_left = int(crop_input_left.get())
-    val_top = int(crop_input_top.get())
-    val_right = int(crop_input_right.get())
-    val_bottom = int(crop_input_bottom.get())
+    val_left = crop_input_left.get()
+    check(val_left)
+    val_left = int(val_left)
+    val_top = crop_input_top.get()
+    check(val_top)
+    val_top = int(val_top)
+    val_right = crop_input_right.get()
+    check(val_right)
+    val_right = int(val_right)
+    val_bottom = crop_input_bottom.get()
+    check(val_bottom)
+    val_bottom = int(val_bottom)
     image = crop(image, val_left, val_top, val_right, val_bottom)
     ar = float(image.width / image.height)
     new_width = int(ar * HEIGHT)
@@ -201,17 +227,53 @@ def submit_crop():
     frame_for_input3.pack_forget()
 
 
+def pozovi_bw():
+    global current_image, image
+    image = black_and_white(image)
+    ar = float(image.width / image.height)
+    new_width = int(ar * HEIGHT)
+    if new_width >= WIDTH:
+        new_height = int(WIDTH / ar)
+        current_image = image.resize((WIDTH, new_height))
+        image_x, image_y = calculateCenterH(new_height)
+    else:
+        image_x, image_y = calculateCenter(new_width)
+        current_image = image.resize((new_width, HEIGHT), Image.LANCZOS)
+    current_image = ImageTk.PhotoImage(current_image)
+
+    canvas.delete("all")
+    canvas.create_image(image_x, image_y, anchor=NW, image=current_image)
+
+
+def blur_func():
+    global current_image, image
+    image = blur(image)
+    ar = float(image.width / image.height)
+    new_width = int(ar * HEIGHT)
+    if new_width >= WIDTH:
+        new_height = int(WIDTH / ar)
+        current_image = image.resize((WIDTH, new_height))
+        image_x, image_y = calculateCenterH(new_height)
+    else:
+        image_x, image_y = calculateCenter(new_width)
+        current_image = image.resize((new_width, HEIGHT), Image.LANCZOS)
+    current_image = ImageTk.PhotoImage(current_image)
+
+    canvas.delete("all")
+    canvas.create_image(image_x, image_y, anchor=NW, image=current_image)
+
+
 window = Tk()
 window.title("Photoshop")
 window.geometry("1000x700")
-window.configure(bg="#00004d")
+window.configure(bg=COLOR)
 window.resizable(True, True)
 
 frame1 = Frame(
     window,
     padx=10,
     pady=10,
-    bg="#00004d"
+    bg=COLOR
 )
 
 label = Label(
@@ -219,16 +281,17 @@ label = Label(
     text="Photoshop",
     font=Font(size=41),
     borderwidth=0,
-    bg="#00004d",
+    bg=COLOR,
     foreground="white"
 )
-label.pack(side=LEFT)
+label.pack(side=LEFT, padx=20)
 
 ic1 = PhotoImage(file="icons/openfile.png")
 openimgBtn = Button(
     frame1,
     image=ic1,
     borderwidth=0,
+    highlightbackground=COLOR,
     command=openfile
 )
 openimgBtn.pack(side=LEFT)
@@ -236,7 +299,7 @@ openimgBtn.pack(side=LEFT)
 
 ###   crop   ###
 
-frame_for_input3 = Frame(window, padx=10, pady=10, bg="#00004d")
+frame_for_input3 = Frame(window, padx=10, pady=10, bg=COLOR)
 
 crop_label = Label(frame_for_input3, text="left ").pack(side=LEFT)
 crop_input_left = Entry(frame_for_input3)
@@ -261,6 +324,7 @@ cropPhotoBtn = Button (
     frame1,
     image=ic2,
     borderwidth=0,
+    highlightbackground=COLOR,
     command=cropfunc
 )
 cropPhotoBtn.pack(side=LEFT)
@@ -273,6 +337,7 @@ rotate = Button(
     frame1,
     image=ic8,
     borderwidth=0,
+    highlightbackground=COLOR,
     command=pozovirot
 ).pack(side=LEFT)
 
@@ -281,6 +346,7 @@ flipHorizontalBtn = Button(
     frame1,
     image=ic3,
     borderwidth=0,
+    highlightbackground=COLOR,
     command=pozovihor
 )
 flipHorizontalBtn.pack(side=LEFT)
@@ -290,14 +356,25 @@ flipVerticalBtn = Button(
     frame1,
     image=ic4,
     borderwidth=0,
+    highlightbackground=COLOR,
     command=pozovivert
 )
 flipVerticalBtn.pack(side=LEFT)
 
+#Contrast
+frame_for_input2 = Frame(window, padx=10, pady=10, bg=COLOR)
+contrast_label = Label(frame_for_input2, text="Input value for contrast: ").pack(side=LEFT)
+contrast_submit = Button(frame_for_input2, text="submit", command=submit_contrast).pack(side=LEFT)
+contrast_input = Entry(frame_for_input2)
+contrast_input.pack()
+
+ic6 = PhotoImage(file="icons/contrast.png")
+contrast_btn = Button(frame1, image=ic6, borderwidth=0, highlightbackground=COLOR, command=contrastFunc)
+contrast_btn.pack(side=LEFT)
 
 #Brightness
 
-frame_for_input = Frame(window, padx=10, pady=10, bg="#00004d")
+frame_for_input = Frame(window, padx=10, pady=10, bg=COLOR)
 
 brigth_label = Label(frame_for_input, text="Input value for brightness: ").pack(side=LEFT)
 
@@ -308,21 +385,20 @@ brightness_input.pack()
 
 
 ic5 = PhotoImage(file="icons/brightness.png")
-brightness = Button(frame1, image=ic5, borderwidth=0, command=brightFunc)
+brightness = Button(frame1, image=ic5, borderwidth=0, highlightbackground=COLOR, command=brightFunc)
 brightness.pack(side=LEFT)
 
 
-#Contrast
-frame_for_input2 = Frame(window, padx=10, pady=10, bg="#00004d")
-contrast_label = Label(frame_for_input2, text="Input value for contrast: ").pack(side=LEFT)
-contrast_submit = Button(frame_for_input2, text="submit", command=submit_contrast).pack(side=LEFT)
-contrast_input = Entry(frame_for_input2)
-contrast_input.pack()
+#black and white
 
-ic6 = PhotoImage(file="icons/contrast.png")
-contrast_btn = Button(frame1, image=ic6, borderwidth=0, command=contrastFunc)
-contrast_btn.pack(side=LEFT)
+ic9 = PhotoImage(file="icons/bw.png")
+bw_button = Button(frame1, image=ic9, borderwidth=0, highlightbackground=COLOR, command=pozovi_bw)
+bw_button.pack(side=LEFT)
 
+#blur
+ic10 = PhotoImage(file="icons/blur.png")
+blur_button = Button(frame1, image=ic10, borderwidth=0, highlightbackground=COLOR, command=blur_func)
+blur_button.pack(side=LEFT)
 
 #Save
 ic7 = PhotoImage(file="icons/save.png")
@@ -330,9 +406,11 @@ save = Button(
     frame1,
     image=ic7,
     borderwidth=0,
+    highlightbackground=COLOR,
     command=saveimage
 )
 save.pack(side=LEFT)
+
 
 frame1.pack(side=TOP)
 
@@ -340,11 +418,20 @@ photoFrame = Frame(
     window,
     width=600,
     height=400,
-    bg="#00004d"
+    bg=COLOR
 )
 photoFrame.pack(fill=BOTH, expand=TRUE, padx=30, pady=40) 
 
-canvas = Canvas(photoFrame, width=WIDTH, height=HEIGHT, bg="#00004d", borderwidth=0, highlightbackground="#00004d") 
+frame_for_warnings = Frame(
+    window,
+    bg=COLOR
+)
+warning_label = Label(
+    frame_for_warnings,
+    text="Wrong input"
+).pack()
+
+canvas = Canvas(photoFrame, width=WIDTH, height=HEIGHT, bg=COLOR, borderwidth=0, highlightbackground=COLOR) 
 canvas.pack(side=TOP)
 
 canvas.create_image(0, 0, anchor=NW, image=current_image)

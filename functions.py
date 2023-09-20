@@ -1,7 +1,8 @@
 import PIL 
 import numpy as np
 import cv2
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageFilter
+
 
 ######## kako napraviti da funkcionise za png i jpg ?????????????? #########
 
@@ -63,6 +64,17 @@ def contrast(image, value): #### podeli input sa 10
     out = Image.fromarray(contrast_img.astype(np.uint8))
     return out
 
+##### black and white #####
+
+def black_and_white(image):
+    img_bw = image.convert("L")
+    return img_bw
+
+##### blur #####
+
+def blur(image):
+    blurred_image = image.filter(ImageFilter.BLUR)
+    return blurred_image
 
 
 
