@@ -30,6 +30,19 @@ def check(val):
     else:
         warning_forget()
 
+def check_crop(left, top, right, bottom):
+    if left and top and right and bottom:
+        try:
+            int(left)
+            int(top)
+            int(right)
+            int(bottom)
+            warning_forget()
+        except ValueError:
+            warning_func()
+    else:
+        warning_forget()
+
 def calculateCenter(new_width):
     canvas_center_x = WIDTH / 2
     canvas_center_y = HEIGHT / 2
@@ -198,16 +211,14 @@ def cropfunc():
 def submit_crop():
     global file_path, current_image, image
     val_left = crop_input_left.get()
-    check(val_left)
-    val_left = int(val_left)
     val_top = crop_input_top.get()
-    check(val_top)
-    val_top = int(val_top)
     val_right = crop_input_right.get()
-    check(val_right)
-    val_right = int(val_right)
     val_bottom = crop_input_bottom.get()
-    check(val_bottom)
+
+    check_crop(val_left, val_top, val_right, val_bottom)
+    val_left = int(val_left)
+    val_top = int(val_top)
+    val_right = int(val_right)
     val_bottom = int(val_bottom)
     image = crop(image, val_left, val_top, val_right, val_bottom)
     ar = float(image.width / image.height)
@@ -364,9 +375,9 @@ flipVerticalBtn.pack(side=LEFT)
 #Contrast
 frame_for_input2 = Frame(window, padx=10, pady=10, bg=COLOR)
 contrast_label = Label(frame_for_input2, text="Input value for contrast: ").pack(side=LEFT)
-contrast_submit = Button(frame_for_input2, text="submit", command=submit_contrast).pack(side=LEFT)
 contrast_input = Entry(frame_for_input2)
-contrast_input.pack()
+contrast_input.pack(side=LEFT)
+contrast_submit = Button(frame_for_input2, text="submit", command=submit_contrast).pack(side=LEFT)
 
 ic6 = PhotoImage(file="icons/contrast.png")
 contrast_btn = Button(frame1, image=ic6, borderwidth=0, highlightbackground=COLOR, command=contrastFunc)
@@ -378,11 +389,10 @@ frame_for_input = Frame(window, padx=10, pady=10, bg=COLOR)
 
 brigth_label = Label(frame_for_input, text="Input value for brightness: ").pack(side=LEFT)
 
-bright_submit = Button(frame_for_input, text="submit", command=submit_brightness).pack(side=LEFT)
-
 brightness_input = Entry(frame_for_input)
-brightness_input.pack()
+brightness_input.pack(side=LEFT)
 
+bright_submit = Button(frame_for_input, text="submit", command=submit_brightness).pack(side=LEFT)
 
 ic5 = PhotoImage(file="icons/brightness.png")
 brightness = Button(frame1, image=ic5, borderwidth=0, highlightbackground=COLOR, command=brightFunc)
